@@ -1,0 +1,15 @@
+{{- range .DomainTypes }}
+class {{ .Name }} {
+  final {{ .InnerType }} value;
+
+  {{ .Name }}(this.value);
+
+  factory {{ .Name }}.fromQueryResult(dynamic value) {
+    return {{ .Name }}(value as {{ .InnerType }});
+  }
+
+  {{ .InnerType }} asSqlType() {
+    return value;
+  }
+}
+{{- end -}}

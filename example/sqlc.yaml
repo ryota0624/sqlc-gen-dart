@@ -1,0 +1,19 @@
+version: "2"
+plugins:
+  - name: sql-gen-dart
+    process:
+      cmd: ../plugin/sqlc-gen-dart
+sql:
+  - engine: "postgresql"
+    queries: "queries.sql"
+    schema: "schema.sql"
+    codegen:
+      - out: generated
+        plugin: sql-gen-dart
+        options:
+          filename: "query.dart"
+          domain_inner_type_mapping:
+            - type_name: "post_content"
+              inner_type: "String"
+            - type_name: "post_rate"
+              inner_type: "int"

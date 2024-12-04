@@ -1,0 +1,112 @@
+{{- /*
+https://pkg.go.dev/text/template
+https://github.com/sqlc-dev/sqlc/blob/main/protos/plugin/codegen.proto
+*/ -}}
+
+{{- define "ScalaType" -}}
+  {{- $scalaType := UnknownScalarType . -}}
+  {{- if eq .Type.Name "integer"}}{{ $scalaType = "int" }}
+  {{- else if eq .Type.Name "text"}}{{ $scalaType = "String" }}
+  {{- else if IsDomainTypeColumn . }}{{ $scalaType = DomainType . }}
+  {{- end -}}
+  {{- $scalaType }}
+{{- end -}}
+
+import 'package:postgres/postgres.dart';
+import 'package:sqlc_gen_dart/sqlc_gen_dart.dart';
+import '{{ .DomainTypesDartFilePath }}';
+
+{{range .Queries -}}
+{{range .Comments}}// {{.}}
+{{end -}}
+{{$pascalCaseRowType := ToPascalCase .Name -}}
+{{$rowType := printf "Row%s" $pascalCaseRowType -}}
+{{- if or (eq .Cmd ":many") (eq .Cmd ":one") }}
+{{end}}
+  {{- if gt (len .Columns) 1 -}}
+class {{ $rowType }} {
+  {{- range .Columns}}
+  final {{ template "ScalaType" .}}{{- if not .NotNull }}?{{end}} {{ ToCamelCase .Name}};
+  {{- end}}
+
+  {{ $rowType }}({
+    {{- range .Columns}}
+    required this.{{ ToCamelCase .Name}},
+    {{- end}}
+  });
+
+  factory {{ $rowType }}.fromQueryResult(ResultRow row) {
+    return {{ $rowType }}(
+      {{- range $i, $column := .Columns}}
+      {{ ToCamelCase $column.Name}}: {{ if IsDomainTypeColumn $column }}{{- DomainType $column -}}.fromQueryResult(row[{{$i}}]),
+      {{- else  -}} row[{{$i}}] as {{ template "ScalaType" $column }},{{end}}
+      {{- end}}
+    );
+  }
+}
+  {{- else -}}
+typedef {{ $rowType }} = {{ template "ScalaType" (index .Columns 0) }}{{- if not (index .Columns 0).NotNull }}?{{end}};
+  {{- end }}
+
+{{- $returnType := "__DEFAULT__" -}}
+{{- $functionReturnType := "__DEFAULT__" -}}
+{{- if eq .Cmd ":exec" }}
+{{- else if or (eq .Cmd ":many") (eq .Cmd ":many") }}
+{{- else if eq .Cmd ":one" }}
+{{- else -}}
+{{- end -}}
+{{- $returnType = "__UNKNOWN_QUERY_ANNOTATION__" -}}
+{{- $returnType = $rowType -}}
+{{- $functionReturnType = printf "%s?" $returnType -}}
+{{- $returnType = printf "List<%s>" $rowType -}}
+{{- $functionReturnType = $returnType -}}
+{{- $returnType = "void" -}}
+{{- $functionReturnType = $returnType}}
+
+Future<{{- $functionReturnType }}> {{.Name}}(
+  Session session, { 
+  {{- range .Params}}
+  required {{template "ScalaType" .Column}} {{ToCamelCase .Column.Name}},
+  {{- end}}
+  QueryParameter queryParameter = QueryParameter.defaultParameter,
+}) async {
+  {{if ne $functionReturnType  "void"}}
+  final result = {{ end -}}await session.execute("""
+    {{ EscapeQueryPlaceholder .Text }}
+  """,
+      ignoreRows: queryParameter.ignoreRows,
+      queryMode: queryParameter.queryMode,
+      timeout: queryParameter.timeout,
+      parameters: [
+        {{- range .Params}}
+        {{ToCamelCase .Column.Name}}{{- if IsDomainTypeColumn .Column }}.asSqlType(){{- else }}{{- end}},
+        {{- end}}
+      ]);
+
+  {{- if eq $functionReturnType  "void" }}
+  return;
+  {{- else -}}
+  {{if gt (len .Columns) 1 -}}
+  {{if or (eq .Cmd ":exec") (eq .Cmd ":many") }}
+  return result.map({{ $rowType }}.fromQueryResult).toList();
+  {{end}}
+  {{if eq .Cmd ":one" }}
+  if (result.isNotEmpty) {
+    return {{ $rowType }}.fromQueryResult(result.first);
+  }
+  return null;
+  {{- end -}}
+  {{- else -}}
+  {{if or (eq .Cmd ":exec") (eq .Cmd ":many") }}
+  return result.cast<{{ $rowType }}>();
+  {{- end -}}
+  {{if eq .Cmd ":one" }}
+  if (result.isNotEmpty) {
+    return result.cast<{{ $rowType }}>();
+  }
+  return null;
+  {{- end -}}
+  {{- end -}}
+  {{- end}}
+}
+{{- end -}}

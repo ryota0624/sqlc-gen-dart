@@ -3,7 +3,8 @@
   "packages": [
     "sqlc@latest",
     "go@1.23.1",
-    "dart@3.4.4"
+    "dart@3.4.4",
+    "toybox@latest"
   ],
   "shell": {
     "init_hook": [

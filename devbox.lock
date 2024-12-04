@@ -144,6 +144,54 @@
           "store_path": "/nix/store/6mcdgk9rg9g4kia87jjv25h90b2n9r62-sqlc-1.27.0"
         }
       }
+    },
+    "toybox@latest": {
+      "last_modified": "2024-11-28T07:51:56Z",
+      "resolved": "github:NixOS/nixpkgs/226216574ada4c3ecefcbbec41f39ce4655f78ef#toybox",
+      "source": "devbox-search",
+      "version": "0.8.11",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/a75xhmrc9vq0pkw4m1i4afw7pdhdvrl5-toybox-0.8.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/a75xhmrc9vq0pkw4m1i4afw7pdhdvrl5-toybox-0.8.11"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/v307nz39hmij4030va0aizl8sfvj4v7l-toybox-0.8.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/v307nz39hmij4030va0aizl8sfvj4v7l-toybox-0.8.11"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2173239dhi10kpn0n832v1pk1vvwgyx0-toybox-0.8.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2173239dhi10kpn0n832v1pk1vvwgyx0-toybox-0.8.11"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/1zgl44pclf2q6khkbz5zpkvg0alap9v4-toybox-0.8.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/1zgl44pclf2q6khkbz5zpkvg0alap9v4-toybox-0.8.11"
+        }
+      }
     }
   }
 }

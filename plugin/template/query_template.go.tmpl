@@ -51,17 +51,19 @@ typedef {{ $rowType }} = {{ template "ScalaType" (index .Columns 0) }}{{- if not
 {{- $returnType := "__DEFAULT__" -}}
 {{- $functionReturnType := "__DEFAULT__" -}}
 {{- if eq .Cmd ":exec" }}
+  {{- $returnType = "void" -}}
+  {{- $functionReturnType = $returnType}}
 {{- else if or (eq .Cmd ":many") (eq .Cmd ":many") }}
+  {{- $returnType = printf "List<%s>" $rowType -}}
+  {{- $functionReturnType = $returnType}}
 {{- else if eq .Cmd ":one" }}
+  {{- $returnType = $rowType -}}
+  {{- $functionReturnType = printf "%s?" $returnType -}}
 {{- else -}}
+  {{- $returnType = "__UNKNOWN_QUERY_ANNOTATION__" -}}
+  {{- $functionReturnType = $returnType -}}
 {{- end -}}
-{{- $returnType = "__UNKNOWN_QUERY_ANNOTATION__" -}}
-{{- $returnType = $rowType -}}
-{{- $functionReturnType = printf "%s?" $returnType -}}
-{{- $returnType = printf "List<%s>" $rowType -}}
-{{- $functionReturnType = $returnType -}}
-{{- $returnType = "void" -}}
-{{- $functionReturnType = $returnType}}
+
 
 Future<{{- $functionReturnType }}> {{.Name}}(
   Session session, { 
@@ -70,6 +72,7 @@ Future<{{- $functionReturnType }}> {{.Name}}(
   {{- end}}
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
+  // {{.Cmd}}
   {{if ne $functionReturnType  "void"}}
   final result = {{ end -}}await session.execute("""
     {{ EscapeQueryPlaceholder .Text }}
@@ -107,6 +110,6 @@ Future<{{- $functionReturnType }}> {{.Name}}(
   return null;
   {{- end -}}
   {{- end -}}
-  {{- end}}
+  {{- end }}
 }
 {{- end -}}

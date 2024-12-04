@@ -1,0 +1,15 @@
+name: sqlc-gen-dart-example
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+    image: pgvector/pgvector:pg17
+    ports:
+      - 4206:5432
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data: {}

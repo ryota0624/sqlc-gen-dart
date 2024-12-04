@@ -1,6 +1,6 @@
 TODO:
 
-dockerでpostgresqlを立ち上げて、サンプルはそこに接続するようにする
+wasm pluginのデプロイ
 
 ## Features
 
@@ -11,6 +11,17 @@ dockerでpostgresqlを立ち上げて、サンプルはそこに接続するよ�
 
 TODO: List prerequisites and provide or point to information on how to
 start using the package.
+
+## Run Example
+
+```bash
+docker compose -f ./example/compose.yaml up -d
+
+devbox shell
+cd example
+make generate 
+make run_example
+```
 
 ## Usage
 

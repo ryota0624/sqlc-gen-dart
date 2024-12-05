@@ -42,8 +42,22 @@ jobs:
           DOWNLOAD_URL="https://github.com/ryota0624/buf-sandbox/releases/download/${TAG}/sqlc-gen-dart.wasm"
           DOWNLOAD_URL_LINE="      url: ${DOWNLOAD_URL}"
           CHECKSUM_LINE='      sha256: "${PLUGIN_CHECKSUM}"'
-          awk -v replaceLine=${DOWNLOAD_URL_LINE} '{if ($0 ~ "url: https://github.com/ryota0624/sqlc-gen-dart/releases/download") print replaceLine ; else print}' README.md > README.md
-          awk -v replaceLine=${CHECKSUM_LINE} '{if ($0 ~ "sha256:") print replaceLine ; else print}' README.md > README.md
+          awk -v replaceLine="${DOWNLOAD_URL_LINE}" '
+          {
+            if ($0 ~ "url: https://github.com/ryota0624/sqlc-gen-dart/releases/download")
+              print replaceLine;
+              else
+              print;
+          }' README.md > README.tmp && mv README.tmp README.md
+          
+          awk -v replaceLine="${CHECKSUM_LINE}" '
+          {
+            if ($0 ~ "sha256:")
+            print replaceLine;
+            else
+            print;
+          }' README.md > README.tmp && mv README.tmp README.md
+          
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add README.md

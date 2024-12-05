@@ -1,4 +1,4 @@
-# melos_managed_dependency_overrides: sqlc_dart,sqlc_postgres_dart,sqlc_duckdb_dart
+# melos_managed_dependency_overrides: sqlc_dart,sqlc_postgres_dart,sqlc_duckdb_dart,sqlc_sqlite3_dart
 dependency_overrides:
   sqlc_dart:
     path: ../packages/sqlc
@@ -6,3 +6,5 @@ dependency_overrides:
     path: ../packages/sqlc_duckdb
   sqlc_postgres_dart:
     path: ../packages/sqlc_postgres
+  sqlc_sqlite3_dart:
+    path: ../packages/sqlc_sqlite3

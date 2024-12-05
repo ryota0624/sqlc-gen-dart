@@ -5,10 +5,23 @@ plugins:
       cmd: ../plugin/sqlc-gen-dart
 sql:
   - engine: "postgresql"
-    queries: "queries.sql"
-    schema: "schema.sql"
+    queries: "sql/queries.sql"
+    schema: "sql/schema.sql"
     codegen:
       - out: generated
+        plugin: sql-gen-dart
+        options:
+          filename: "query.dart"
+          domain_inner_type_mapping:
+            - type_name: "post_content"
+              inner_type: "String"
+            - type_name: "post_rate"
+              inner_type: "int"
+  - engine: "sqlite"
+    queries: "sql/queries_sqlite3.sql"
+    schema: "sql/schema_sqlite3.sql"
+    codegen:
+      - out: generated_sqlite
         plugin: sql-gen-dart
         options:
           filename: "query.dart"

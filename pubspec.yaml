@@ -6,7 +6,6 @@ repository: https://github.com/ryota0624/sqlc-gen-dart
 environment:
   sdk: ^3.4.3
 
-# Add regular dependencies here.
 dependencies:
   postgres: ^3.4.4
   meta: ^1.16.0

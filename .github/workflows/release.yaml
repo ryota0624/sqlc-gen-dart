@@ -1,0 +1,24 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_wasm:
+    name: build_image
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go 1.23.1
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.1
+      - name: build wasm
+        run: |
+          make build_plugin_wasm

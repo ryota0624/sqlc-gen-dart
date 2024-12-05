@@ -20,17 +20,14 @@ void main() async {
   await createPost(
     conn,
     id: Random().nextDouble().toString(),
-    parentId:  Random().nextDouble().toString(),
+    parentId: Random().nextDouble().toString(),
     content: PostContent('Hello'),
     star: 100,
   );
 
   final posts = await listPosts(conn);
   for (var post in posts) {
-    print(post.id);
-    print(post.parentId);
-    print(post.content);
-    print(post.star);
+    print(post.toString());
     print('\n');
   }
   await conn.close();

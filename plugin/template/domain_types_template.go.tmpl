@@ -11,5 +11,19 @@ class {{ .Name }} {
   {{ .InnerType }} asSqlType() {
     return value;
   }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is {{ .Name }} &&
+      runtimeType == other.runtimeType &&
+      value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return '{{ .Name }}($value)';
+  }
 }
 {{- end -}}

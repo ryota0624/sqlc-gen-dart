@@ -1,7 +1,3 @@
-TODO:
-
-wasm pluginのデプロイ
-
 ## Features
 
 * generate dart code from sql
@@ -9,14 +5,44 @@ wasm pluginのデプロイ
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+write sqlc.yaml & schema.sql & queries.sql
+
+```
+version: "2"
+plugins:
+  - name: sql-gen-dart
+    wasm:
+      url: https://github.com/ryota0624/sqlc-gen-dart/releases/download/${TAG}/sqlc-gen-dart.wasm
+      sha256: "${CHECKSUM}"
+sql:
+  - engine: "postgresql"
+    queries: "queries.sql"
+    schema: "schema.sql"
+    codegen:
+      - out: generated
+        plugin: sql-gen-dart
+        options:
+          filename: "query.dart"
+          domain_inner_type_mapping:
+            - type_name: "your_string_based_domain"
+              inner_type: "String"
+```
+
+run sqlc
+
+```
+sqlc generate
+```
 
 ## Run Example
 
+require
+* [devbox](https://www.jetify.com/devbox)
+* docker
+
+
 ```bash
 docker compose -f ./example/compose.yaml up -d
-
 devbox shell
 cd example
 make generate 
@@ -25,15 +51,4 @@ make run_example
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+see [example](./example/main.dart)

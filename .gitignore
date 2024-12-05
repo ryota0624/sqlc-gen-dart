@@ -8,7 +8,5 @@ pubspec.lock
 
 .idea
 
-example/generated
-
 plugin/sqlc-gen-dart
 plugin/sqlc-gen-dart.wasm

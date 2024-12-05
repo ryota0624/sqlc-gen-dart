@@ -91,6 +91,7 @@ func generate(_ context.Context, req *plugin.GenerateRequest) (*plugin.GenerateR
 		"EscapeQueryPlaceholder": func(text string) string {
 			return strings.ReplaceAll(text, "$", "\\$")
 		},
+		"PsqlColumnTypeDescription": PsqlColumnTypeDescription,
 	}).Parse(string(queryTemplateContent)))
 
 	domainTypesTmpl := template.Must(template.New("domain_types_template.go.tmpl").Parse(string(domainTypesTemplateContent)))
@@ -198,4 +199,20 @@ func EvalQueryResultInput(query plugin.Query) *QueryResult {
 		FunctionReturnType: functionReturnType,
 		RowType:            rowType,
 	}
+}
+
+func PsqlColumnTypeDescription(column *plugin.Column) string {
+	typeDescription := fmt.Sprintf("%s", column.Type.Name)
+	if column.IsArray {
+		for range column.ArrayDims {
+			typeDescription = fmt.Sprintf("%s[]", typeDescription)
+		}
+	}
+
+	if !column.NotNull {
+		typeDescription = fmt.Sprintf("%s nullable", typeDescription)
+	}
+
+	return typeDescription
+
 }

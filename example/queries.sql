@@ -16,3 +16,7 @@ from post;
 insert into post (id, parent_id, content, star)
 values ($1, $2, $3, $4)
 returning *;
+
+-- name: listArrayAndJson :many
+select *
+from array_and_json;

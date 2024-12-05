@@ -45,6 +45,8 @@ import '{{ .DomainTypesDartFilePath }}';
 {{if gt (len .Columns) 1 }}
 class {{ $rowType }} {
   {{- range .Columns}}
+  // psql: {{ PsqlColumnTypeDescription . }}
+  {{- if gt (len .Comment) 1 -}}/// {{ .Comment }}{{end}}
   final {{ DartType .}}{{- if not .NotNull }}?{{end}} {{ ToCamelCase .Name}};
   {{- end}}
 

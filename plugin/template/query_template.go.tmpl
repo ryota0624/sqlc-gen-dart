@@ -16,14 +16,14 @@ import 'package:postgres/postgres.dart';
 import 'package:sqlc_gen_dart/sqlc_gen_dart.dart';
 import '{{ .DomainTypesDartFilePath }}';
 
-{{range .Queries -}}
-{{range .Comments}}// {{.}}
+{{- range .Queries -}}
+{{- range .Comments -}}// {{.}}
 {{end -}}
 {{$pascalCaseRowType := ToPascalCase .Name -}}
 {{$rowType := printf "Row%s" $pascalCaseRowType -}}
 {{- if or (eq .Cmd ":many") (eq .Cmd ":one") }}
-{{end}}
-  {{- if gt (len .Columns) 1 -}}
+{{end -}}
+  {{- if gt (len .Columns) 1 }}
 class {{ $rowType }} {
   {{- range .Columns}}
   final {{ template "ScalaType" .}}{{- if not .NotNull }}?{{end}} {{ ToCamelCase .Name}};
@@ -44,35 +44,34 @@ class {{ $rowType }} {
     );
   }
 }
-  {{- else -}}
-typedef {{ $rowType }} = {{ template "ScalaType" (index .Columns 0) }}{{- if not (index .Columns 0).NotNull }}?{{end}};
-  {{- end }}
+  {{- else}}
+typedef {{ $rowType }} = {{ template "ScalaType" (index .Columns 0) }}{{- if not (index .Columns 0).NotNull -}}?{{- end -}};
+  {{- end -}}
 
-{{- $returnType := "__DEFAULT__" -}}
-{{- $functionReturnType := "__DEFAULT__" -}}
-{{- if eq .Cmd ":exec" }}
+{{- $returnType := "__RETURN_TYPE_NOT_SUPPORTED__" -}}
+{{- $functionReturnType := "__RETURN_TYPE_NOT_SUPPORTED__" -}}
+{{- if eq .Cmd ":exec" -}}
   {{- $returnType = "void" -}}
-  {{- $functionReturnType = $returnType}}
-{{- else if or (eq .Cmd ":many") (eq .Cmd ":many") }}
+  {{- $functionReturnType = $returnType -}}
+{{- else if or (eq .Cmd ":many") (eq .Cmd ":many") -}}
   {{- $returnType = printf "List<%s>" $rowType -}}
-  {{- $functionReturnType = $returnType}}
-{{- else if eq .Cmd ":one" }}
+  {{- $functionReturnType = $returnType -}}
+{{- else if eq .Cmd ":one" -}}
   {{- $returnType = $rowType -}}
   {{- $functionReturnType = printf "%s?" $returnType -}}
 {{- else -}}
   {{- $returnType = "__UNKNOWN_QUERY_ANNOTATION__" -}}
   {{- $functionReturnType = $returnType -}}
-{{- end -}}
+{{- end}}
 
-
+//  {{.Name}} {{.Cmd}}
 Future<{{- $functionReturnType }}> {{.Name}}(
-  Session session, { 
+  Session session, {
   {{- range .Params}}
   required {{template "ScalaType" .Column}} {{ToCamelCase .Column.Name}},
   {{- end}}
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  // {{.Cmd}}
   {{if ne $functionReturnType  "void"}}
   final result = {{ end -}}await session.execute("""
     {{ EscapeQueryPlaceholder .Text }}
@@ -90,9 +89,9 @@ Future<{{- $functionReturnType }}> {{.Name}}(
   return;
   {{- else -}}
   {{if gt (len .Columns) 1 -}}
-  {{if or (eq .Cmd ":exec") (eq .Cmd ":many") }}
+  {{if eq .Cmd ":many" }}
   return result.map({{ $rowType }}.fromQueryResult).toList();
-  {{end}}
+  {{- end -}}
   {{if eq .Cmd ":one" }}
   if (result.isNotEmpty) {
     return {{ $rowType }}.fromQueryResult(result.first);

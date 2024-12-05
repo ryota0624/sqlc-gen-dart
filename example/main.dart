@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:postgres/postgres.dart';
 import 'package:sqlc_dart/sqlc_dart.dart';
 import 'package:sqlc_postgres_dart/sqlc_dart_postgres.dart';
+import 'package:sqlc_duckdb_dart/sqlc_dart_duckdb.dart';
 
+import 'package:duckdb_dart/duckdb_dart.dart' as d;
 import 'generated/domain_types.dart';
 import 'generated/query.dart';
 
@@ -19,21 +21,23 @@ void main() async {
   );
   print('has connection!');
   final be = PostgresBackend();
-  final a = GetReplyIds(be.session(conn))(
-    parentId: '1',
-  );
-  await createPost(
-    conn,
-    id: Random().nextDouble().toString(),
-    parentId: Random().nextDouble().toString(),
-    content: PostContent('Hello'),
-    star: 100,
-  );
 
-  final posts = await listPosts(conn);
+  final posts = await ListPosts(be.session(conn))();
   for (var post in posts) {
     print(post.toString());
     print('\n');
   }
   await conn.close();
+
+  final con = d.Connection('example.duckdb');
+  final duckdb = DuckdbBackend().session(con);
+  await CreatePost(duckdb)(
+      parentId: '1', content: PostContent('content'), id: '1', star: 100);
+
+  final posts2 = await ListPosts(duckdb)();
+  for (var post in posts2) {
+    print(post.toString());
+    print('\n');
+  }
+  con.close();
 }

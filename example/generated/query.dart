@@ -1,9 +1,10 @@
 import 'package:meta/meta.dart';
 import 'package:sqlc_dart/sqlc_dart.dart';
-
 import './domain_types.dart';
 
 typedef RowGetReplyIds = String;
+
+///  getReplyIds :many
 
 class GetReplyIds {
   final BackendSession _session;
@@ -16,41 +17,20 @@ class GetReplyIds {
   }) async {
     final filledQueryExecuteOption =
         queryExecuteOption ?? _session.backend.defaultParameter();
+
     final result = await _session.backend.execute(
-      _session,
-      """
-    select id
+        _session,
+        """
+  select id
 from post
 where parent_id = \$1
   """,
-      [
-        parentId,
-      ],
-      filledQueryExecuteOption,
-    );
+        [
+          parentId,
+        ],
+        filledQueryExecuteOption);
     return result.cast<RowGetReplyIds>();
   }
-}
-
-///  getReplyIds :many
-Future<List<RowGetReplyIds>> getReplyIds(
-  Session session, {
-  required String parentId,
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
-}) async {
-  final result = await session.execute(
-      """
-    select id
-from post
-where parent_id = \$1
-  """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: [
-        parentId,
-      ]);
-  return result.cast<RowGetReplyIds>();
 }
 
 class RowGetPost extends RowBase {
@@ -76,7 +56,7 @@ class RowGetPost extends RowBase {
     required this.content,
   });
 
-  factory RowGetPost.fromQueryResult(ResultRow row) {
+  factory RowGetPost.fromQueryResult(List<Object?> row) {
     return RowGetPost(
       id: row[0] as String,
       parentId: row[1] as String,
@@ -86,27 +66,35 @@ class RowGetPost extends RowBase {
 }
 
 ///  getPost :one
-Future<RowGetPost?> getPost(
-  Session session, {
-  required String id,
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
-}) async {
-  final result = await session.execute(
-      """
-    select id, parent_id, content
+
+class GetPost {
+  final BackendSession _session;
+
+  GetPost(this._session);
+
+  Future<RowGetPost?> call({
+    required String id,
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
+    final result = await _session.backend.execute(
+        _session,
+        """
+  select id, parent_id, content
 from post
 where id = \$1
   """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: [
-        id,
-      ]);
-  if (result.isNotEmpty) {
-    return RowGetPost.fromQueryResult(result.first);
+        [
+          id,
+        ],
+        filledQueryExecuteOption);
+    if (result.isNotEmpty) {
+      return RowGetPost.fromQueryResult(result.first);
+    }
+    return null;
   }
-  return null;
 }
 
 class RowListPosts extends RowBase {
@@ -137,7 +125,7 @@ class RowListPosts extends RowBase {
     required this.star,
   });
 
-  factory RowListPosts.fromQueryResult(ResultRow row) {
+  factory RowListPosts.fromQueryResult(List<Object?> row) {
     return RowListPosts(
       id: row[0] as String,
       parentId: row[1] as String,
@@ -148,20 +136,28 @@ class RowListPosts extends RowBase {
 }
 
 ///  listPosts :many
-Future<List<RowListPosts>> listPosts(
-  Session session, {
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
-}) async {
-  final result = await session.execute(
-      """
-    select id, parent_id, content, star
+
+class ListPosts {
+  final BackendSession _session;
+
+  ListPosts(this._session);
+
+  Future<List<RowListPosts>> call({
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
+    final result = await _session.backend.execute(
+        _session,
+        """
+  select id, parent_id, content, star
 from post
   """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: []);
-  return result.map(RowListPosts.fromQueryResult).toList();
+        [],
+        filledQueryExecuteOption);
+    return result.map(RowListPosts.fromQueryResult).toList();
+  }
 }
 
 class RowCreatePost extends RowBase {
@@ -192,7 +188,7 @@ class RowCreatePost extends RowBase {
     required this.star,
   });
 
-  factory RowCreatePost.fromQueryResult(ResultRow row) {
+  factory RowCreatePost.fromQueryResult(List<Object?> row) {
     return RowCreatePost(
       id: row[0] as String,
       parentId: row[1] as String,
@@ -203,30 +199,37 @@ class RowCreatePost extends RowBase {
 }
 
 ///  createPost :exec
-Future<void> createPost(
-  Session session, {
-  required String id,
-  required String parentId,
-  required PostContent content,
-  required Object star,
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
-}) async {
-  await session.execute(
-      """
-    insert into post (id, parent_id, content, star)
+
+class CreatePost {
+  final BackendSession _session;
+
+  CreatePost(this._session);
+
+  Future<void> call({
+    required String id,
+    required String parentId,
+    required PostContent content,
+    required Object star,
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+    await _session.backend.execute(
+        _session,
+        """
+  insert into post (id, parent_id, content, star)
 values (\$1, \$2, \$3, \$4)
 returning id, parent_id, content, star
   """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: [
-        id,
-        parentId,
-        content.asSqlType(),
-        star,
-      ]);
-  return;
+        [
+          id,
+          parentId,
+          content.asSqlType(),
+          star,
+        ],
+        filledQueryExecuteOption);
+    return;
+  }
 }
 
 class RowListArrayAndJson extends RowBase {
@@ -257,7 +260,7 @@ class RowListArrayAndJson extends RowBase {
     required this.jsonData,
   });
 
-  factory RowListArrayAndJson.fromQueryResult(ResultRow row) {
+  factory RowListArrayAndJson.fromQueryResult(List<Object?> row) {
     return RowListArrayAndJson(
       name: row[0] as String,
       intArray: row[1] as Object,
@@ -268,18 +271,26 @@ class RowListArrayAndJson extends RowBase {
 }
 
 ///  listArrayAndJson :many
-Future<List<RowListArrayAndJson>> listArrayAndJson(
-  Session session, {
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
-}) async {
-  final result = await session.execute(
-      """
-    select name, int_array, text_array_array, json_data
+
+class ListArrayAndJson {
+  final BackendSession _session;
+
+  ListArrayAndJson(this._session);
+
+  Future<List<RowListArrayAndJson>> call({
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
+    final result = await _session.backend.execute(
+        _session,
+        """
+  select name, int_array, text_array_array, json_data
 from array_and_json
   """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: []);
-  return result.map(RowListArrayAndJson.fromQueryResult).toList();
+        [],
+        filledQueryExecuteOption);
+    return result.map(RowListArrayAndJson.fromQueryResult).toList();
+  }
 }

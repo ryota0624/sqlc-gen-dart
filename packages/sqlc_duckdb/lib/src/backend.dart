@@ -1,8 +1,8 @@
 import 'package:sqlc_dart/sqlc_dart.dart';
 import 'package:duckdb_dart/duckdb_dart.dart';
 
-class DuckdbBackendBackend extends Backend<Connection> {
-  const DuckdbBackendBackend();
+class DuckdbBackend extends Backend<Connection> {
+  const DuckdbBackend();
 
   @override
   DuckdbQueryExecuteOption defaultParameter() => DuckdbQueryExecuteOption();
@@ -26,7 +26,7 @@ class DuckdbBackendBackend extends Backend<Connection> {
 class DuckdbBackendSession extends BackendSession {
   final Connection connection;
   @override
-  final DuckdbBackendBackend backend;
+  final DuckdbBackend backend;
 
   DuckdbBackendSession(
     this.connection,

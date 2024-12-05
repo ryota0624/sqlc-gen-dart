@@ -4,7 +4,8 @@
     "sqlc@latest",
     "go@1.23.1",
     "dart@3.4.4",
-    "toybox@latest"
+    "toybox@latest",
+    "duckdb@latest"
   ],
   "shell": {
     "init_hook": [

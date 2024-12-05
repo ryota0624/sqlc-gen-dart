@@ -64,7 +64,7 @@ class {{ $rowType }} extends RowBase {
     {{- end}}
   });
 
-  factory {{ $rowType }}.fromQueryResult(ResultRow row) {
+  factory {{ $rowType }}.fromQueryResult(List<Object?> row) {
     return {{ $rowType }}(
       {{- range $i, $column := .Columns}}
       {{ ToCamelCase $column.Name}}: {{ if IsDomainTypeColumn $column }}{{- DartType $column -}}.fromQueryResult(row[{{$i}}]),
@@ -78,25 +78,31 @@ typedef {{ $rowType }} = {{ DartType (index .Columns 0) }}{{- if not (index .Col
 {{- end}}
 
 ///  {{.Name}} {{.Cmd}}
-Future<{{- $evalQueryResult.FunctionReturnType }}> {{.Name}}(
-  Session session, {
+
+class {{ ToPascalCase .Name }} {
+  final BackendSession _session;
+  {{ ToPascalCase .Name }}(this._session);
+Future<{{- $evalQueryResult.FunctionReturnType }}> call({
   {{- range .Params}}
-  required {{DartType .Column}} {{ToCamelCase .Column.Name}},
+    required {{DartType .Column}} {{ToCamelCase .Column.Name}},
   {{- end}}
-  QueryParameter queryParameter = QueryParameter.defaultParameter,
+  QueryExecuteOption? queryExecuteOption,
 }) async {
+  final filledQueryExecuteOption =
+  queryExecuteOption ?? _session.backend.defaultParameter();
   {{if ne $evalQueryResult.FunctionReturnType  "void"}}
-  final result = {{ end -}}await session.execute("""
-    {{ EscapeQueryPlaceholder .Text }}
+    final result = {{ end -}}await _session.backend.execute(
+      _session,
+"""
+  {{ EscapeQueryPlaceholder .Text }}
   """,
-      ignoreRows: queryParameter.ignoreRows,
-      queryMode: queryParameter.queryMode,
-      timeout: queryParameter.timeout,
-      parameters: [
-        {{- range .Params}}
-        {{ToCamelCase .Column.Name}}{{- if IsDomainTypeColumn .Column }}.asSqlType(){{- else }}{{- end}},
-        {{- end}}
-      ]);
-  {{- template "EvalQueryResult" $evalQueryResult }}
+  [
+  {{- range .Params}}
+    {{ToCamelCase .Column.Name}}{{- if IsDomainTypeColumn .Column }}.asSqlType(){{- else }}{{- end}},
+  {{- end}}
+  ],filledQueryExecuteOption);
+{{- template "EvalQueryResult" $evalQueryResult }}
+}
+
 }
 {{- end -}}

@@ -26,7 +26,6 @@ jobs:
         run: |
           make build_plugin_wasm
           mv plugin/sqlc-gen-dart.wasm sqlc-gen-dart.wasm
-          cd plugin
           CHECKSUM=$(sha256sum sqlc-gen-dart.wasm)
           echo "checksum=${CHECKSUM}" >> $GITHUB_OUTPUT
       - name: Release

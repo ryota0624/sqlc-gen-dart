@@ -26,7 +26,7 @@ jobs:
         run: |
           make build_plugin_wasm
           mv plugin/sqlc-gen-dart.wasm sqlc-gen-dart.wasm
-          CHECKSUM=$(sha256sum sqlc-gen-dart.wasm)
+          CHECKSUM=$(sha256sum sqlc-gen-dart.wasm | awk '{print $1}')
           echo "checksum=${CHECKSUM}" >> $GITHUB_OUTPUT
       - name: Release
         uses: softprops/action-gh-release@v2

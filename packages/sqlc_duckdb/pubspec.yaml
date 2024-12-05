@@ -1,4 +1,4 @@
-name: sqlc_dockdb_dart
+name: sqlc_duckdb_dart
 description: dart library for sqlc duckdb support
 version: 1.0.0
 repository: https://github.com/ryota0624/sqlc-gen-dart

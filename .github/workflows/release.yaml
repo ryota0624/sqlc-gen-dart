@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - "v*.*.*"
 
 jobs:
   build_wasm:
     name: build_image
     permissions:
-      contents: read
+      contents: write
       packages: write
     runs-on: ubuntu-latest
     steps:
@@ -22,3 +22,8 @@ jobs:
       - name: build wasm
         run: |
           make build_plugin_wasm
+          mv plugin/sqlc-gen-dart.wasm sqlc-gen-dart.wasm
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sqlc-gen-dart.wasm

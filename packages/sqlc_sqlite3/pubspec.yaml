@@ -1,0 +1,17 @@
+name: sqlc_sqlite3_dart
+description: dart library for sqlc sqlite3 support
+version: 1.0.0
+repository: https://github.com/ryota0624/sqlc-gen-dart
+
+environment:
+  sdk: ^3.4.3
+
+dependencies:
+  sqlite3: any
+  meta: ^1.16.0
+  collection: ^1.15.0
+  sqlc_dart: any
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0

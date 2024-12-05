@@ -1,9 +1,36 @@
 import 'package:meta/meta.dart';
-import 'package:postgres/postgres.dart';
 import 'package:sqlc_dart/sqlc_dart.dart';
+
 import './domain_types.dart';
 
 typedef RowGetReplyIds = String;
+
+class GetReplyIds {
+  final BackendSession _session;
+
+  GetReplyIds(this._session);
+
+  Future<List<RowGetReplyIds>> call({
+    required String parentId,
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+    final result = await _session.backend.execute(
+      _session,
+      """
+    select id
+from post
+where parent_id = \$1
+  """,
+      [
+        parentId,
+      ],
+      filledQueryExecuteOption,
+    );
+    return result.cast<RowGetReplyIds>();
+  }
+}
 
 ///  getReplyIds :many
 Future<List<RowGetReplyIds>> getReplyIds(
@@ -11,8 +38,8 @@ Future<List<RowGetReplyIds>> getReplyIds(
   required String parentId,
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  
-  final result = await session.execute("""
+  final result = await session.execute(
+      """
     select id
 from post
 where parent_id = \$1
@@ -25,20 +52,23 @@ where parent_id = \$1
       ]);
   return result.cast<RowGetReplyIds>();
 }
+
 class RowGetPost extends RowBase {
   // psql: text
   final String id;
+
   // psql: text
   final String parentId;
+
   // psql: post_content
   final PostContent content;
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+      };
 
   RowGetPost({
     required this.id,
@@ -61,8 +91,8 @@ Future<RowGetPost?> getPost(
   required String id,
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  
-  final result = await session.execute("""
+  final result = await session.execute(
+      """
     select id, parent_id, content
 from post
 where id = \$1
@@ -78,23 +108,27 @@ where id = \$1
   }
   return null;
 }
+
 class RowListPosts extends RowBase {
   // psql: text
   final String id;
+
   // psql: text
   final String parentId;
+
   // psql: post_content
   final PostContent content;
+
   // psql: int4 nullable
   final Object? star;
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-    'star': star,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+        'star': star,
+      };
 
   RowListPosts({
     required this.id,
@@ -118,35 +152,38 @@ Future<List<RowListPosts>> listPosts(
   Session session, {
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  
-  final result = await session.execute("""
+  final result = await session.execute(
+      """
     select id, parent_id, content, star
 from post
   """,
       ignoreRows: queryParameter.ignoreRows,
       queryMode: queryParameter.queryMode,
       timeout: queryParameter.timeout,
-      parameters: [
-      ]);
+      parameters: []);
   return result.map(RowListPosts.fromQueryResult).toList();
 }
+
 class RowCreatePost extends RowBase {
   // psql: text
   final String id;
+
   // psql: text
   final String parentId;
+
   // psql: post_content
   final PostContent content;
+
   // psql: int4 nullable
   final Object? star;
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-    'star': star,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+        'star': star,
+      };
 
   RowCreatePost({
     required this.id,
@@ -174,7 +211,8 @@ Future<void> createPost(
   required Object star,
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  await session.execute("""
+  await session.execute(
+      """
     insert into post (id, parent_id, content, star)
 values (\$1, \$2, \$3, \$4)
 returning id, parent_id, content, star
@@ -190,23 +228,27 @@ returning id, parent_id, content, star
       ]);
   return;
 }
+
 class RowListArrayAndJson extends RowBase {
   // psql: text nullable
   final String? name;
+
   // psql: int4[] nullable
   final Object? intArray;
+
   // psql: text[][] nullable
   final String? textArrayArray;
+
   // psql: json nullable
   final Object? jsonData;
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'name': name,
-    'int_array': intArray,
-    'text_array_array': textArrayArray,
-    'json_data': jsonData,
-  };
+        'name': name,
+        'int_array': intArray,
+        'text_array_array': textArrayArray,
+        'json_data': jsonData,
+      };
 
   RowListArrayAndJson({
     required this.name,
@@ -230,15 +272,14 @@ Future<List<RowListArrayAndJson>> listArrayAndJson(
   Session session, {
   QueryParameter queryParameter = QueryParameter.defaultParameter,
 }) async {
-  
-  final result = await session.execute("""
+  final result = await session.execute(
+      """
     select name, int_array, text_array_array, json_data
 from array_and_json
   """,
       ignoreRows: queryParameter.ignoreRows,
       queryMode: queryParameter.queryMode,
       timeout: queryParameter.timeout,
-      parameters: [
-      ]);
+      parameters: []);
   return result.map(RowListArrayAndJson.fromQueryResult).toList();
 }

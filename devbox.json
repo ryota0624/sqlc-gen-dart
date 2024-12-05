@@ -8,7 +8,8 @@
   ],
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
+      "echo 'Welcome to devbox!' > /dev/null",
+      "dart pub global activate melos"
     ],
     "scripts": {
       "test": [

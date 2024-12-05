@@ -1,0 +1,5 @@
+name: sqlc_gen_dart
+repository: https://github.com/ryota0624/sqlc-gen-dart
+packages:
+  - packages/*
+  - example

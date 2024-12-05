@@ -12,8 +12,8 @@ version: "2"
 plugins:
   - name: sql-gen-dart
     wasm:
-      url: https://github.com/ryota0624/sqlc-gen-dart/releases/download/${TAG}/sqlc-gen-dart.wasm
-      sha256: "${CHECKSUM}"
+      url: https://github.com/ryota0624/buf-sandbox/releases/download/v0.0.0-release-test9/sqlc-gen-dart.wasm
+      sha256: "${PLUGIN_CHECKSUM}"
 sql:
   - engine: "postgresql"
     queries: "queries.sql"

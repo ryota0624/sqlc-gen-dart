@@ -13,7 +13,7 @@ plugins:
   - name: sql-gen-dart
     wasm:
       url: https://github.com/ryota0624/buf-sandbox/releases/download/v0.0.0/sqlc-gen-dart.wasm
-      sha256: "ef0820d29c596338b1d5ed96286399993c8cfc27e317f94e63cf57ff29b3fbf9  sqlc-gen-dart.wasm"
+      sha256: "ef0820d29c596338b1d5ed96286399993c8cfc27e317f94e63cf57ff29b3fbf9"
 sql:
   - engine: "postgresql"
     queries: "queries.sql"

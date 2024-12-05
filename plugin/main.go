@@ -68,34 +68,28 @@ func generate(_ context.Context, req *plugin.GenerateRequest) (*plugin.GenerateR
 		return nil, fmt.Errorf("parsing options: %w", err)
 	}
 
-	var domainTypes []DomainType
+	domainTypes := NewDomainTypes()
 	for _, domainType := range options.DomainInnerTypeMapping {
-		domainTypes = append(domainTypes, DomainType{
+		domainTypes.AddType(DomainType{
 			Name:       textcase.PascalCase(domainType.TypeName),
 			InnerType:  domainType.InnerType,
 			OnPsqlName: domainType.TypeName,
 		})
 	}
-	domainTypeMapByOnPsqlName := make(map[string]string)
-	for _, domainType := range domainTypes {
-		domainTypeMapByOnPsqlName[domainType.OnPsqlName] = domainType.Name
-	}
 
 	queryTmpl := template.Must(template.New("query_template.go.tmpl").Funcs(map[string]any{
 		"IsDomainTypeColumn": func(column *plugin.Column) bool {
-			_, ok := domainTypeMapByOnPsqlName[column.Type.Name]
+			_, ok := domainTypes.GetDomainType(column.Type.Name)
 			return ok
 		},
-		"DomainType": func(column *plugin.Column) string {
-			return domainTypeMapByOnPsqlName[column.Type.Name]
+		"DartType": func(column *plugin.Column) string {
+			return dartType(column, domainTypes)
 		},
-		"ToCamelCase":  textcase.CamelCase,
-		"ToPascalCase": textcase.PascalCase,
+		"EvalQueryResultInput": EvalQueryResultInput,
+		"ToCamelCase":          textcase.CamelCase,
+		"ToPascalCase":         textcase.PascalCase,
 		"EscapeQueryPlaceholder": func(text string) string {
 			return strings.ReplaceAll(text, "$", "\\$")
-		},
-		"UnknownScalarType": func(column *plugin.Column) string {
-			return "Object" + "/*" + column.Type.Name + "*/"
 		},
 	}).Parse(string(queryTemplateContent)))
 
@@ -106,7 +100,7 @@ func generate(_ context.Context, req *plugin.GenerateRequest) (*plugin.GenerateR
 	err = domainTypesTmpl.Execute(&domainTypesCodeBuf, struct {
 		DomainTypes []DomainType
 	}{
-		DomainTypes: domainTypes,
+		DomainTypes: domainTypes.GetTypesSlice(),
 	})
 
 	var queryCodeBuf bytes.Buffer
@@ -129,4 +123,79 @@ func generate(_ context.Context, req *plugin.GenerateRequest) (*plugin.GenerateR
 	})
 
 	return &resp, nil
+}
+
+type DomainTypes struct {
+	TypesMapByOnPsqlName map[string]DomainType
+}
+
+func NewDomainTypes() *DomainTypes {
+	return &DomainTypes{
+		TypesMapByOnPsqlName: make(map[string]DomainType),
+	}
+}
+
+func (d *DomainTypes) AddType(domainType DomainType) {
+	d.TypesMapByOnPsqlName[domainType.OnPsqlName] = domainType
+}
+
+func (d *DomainTypes) GetDomainType(onPsqlName string) (DomainType, bool) {
+	domainType, ok := d.TypesMapByOnPsqlName[onPsqlName]
+	return domainType, ok
+}
+
+func (d *DomainTypes) GetTypesSlice() []DomainType {
+	var domainTypes []DomainType
+	for _, domainType := range d.TypesMapByOnPsqlName {
+		domainTypes = append(domainTypes, domainType)
+	}
+	return domainTypes
+}
+
+func dartType(column *plugin.Column, types *DomainTypes) string {
+	if domainType, ok := types.GetDomainType(column.Type.Name); ok {
+		return domainType.Name
+	}
+	switch column.Type.Name {
+	case "integer":
+		return "int"
+	case "text":
+		return "String"
+	default:
+		return "Object"
+	}
+}
+
+type QueryResult struct {
+	Columns            []*plugin.Column
+	Cmd                string
+	FunctionReturnType string
+	RowType            string
+}
+
+func QueryResultRowType(query plugin.Query) string {
+	pascalCaseName := textcase.PascalCase(query.Name)
+	return fmt.Sprintf("Row%s", pascalCaseName)
+}
+
+func EvalQueryResultInput(query plugin.Query) *QueryResult {
+	var functionReturnType string
+	rowType := QueryResultRowType(query)
+	switch query.Cmd {
+	case ":exec":
+		functionReturnType = "void"
+	case ":many":
+		functionReturnType = fmt.Sprintf("List<%s>", rowType)
+	case ":one":
+		functionReturnType = fmt.Sprintf("%s?", rowType)
+	default:
+		panic(fmt.Sprintf("Unsupported query command: %s", query.Cmd))
+	}
+
+	return &QueryResult{
+		Columns:            query.Columns,
+		Cmd:                query.Cmd,
+		FunctionReturnType: functionReturnType,
+		RowType:            rowType,
+	}
 }

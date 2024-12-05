@@ -57,11 +57,9 @@ jobs:
             else
             print;
           }' README.md > README.tmp && mv README.tmp README.md
-          
+          git remote set-url origin git@github.com:ryota0624/sqlc-gen-dart.git
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add README.md
-          git --no-pager diff --no-color
-          git diff
           git commit -m "Update README.md"
           git push

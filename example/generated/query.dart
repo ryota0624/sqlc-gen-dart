@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart';
-import 'package:sqlc_gen_dart/sqlc_gen_dart.dart';
+import 'package:sqlc_dart/sqlc_dart.dart';
 import './domain_types.dart';
 
 typedef RowGetReplyIds = String;

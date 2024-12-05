@@ -1,4 +1,4 @@
-name: sqlc_gen_dart
+name: sqlc_dart
 description: dart library for sqlc
 version: 1.0.0
 repository: https://github.com/ryota0624/sqlc-gen-dart
@@ -6,5 +6,11 @@ repository: https://github.com/ryota0624/sqlc-gen-dart
 environment:
   sdk: ^3.4.3
 
+dependencies:
+  postgres: ^3.4.4
+  meta: ^1.16.0
+  collection: ^1.15.0
+
 dev_dependencies:
-  melos: ^6.1.0
+  lints: ^3.0.0
+  test: ^1.24.0

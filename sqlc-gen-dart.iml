@@ -10,6 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/sqlc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/sqlc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/sqlc/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

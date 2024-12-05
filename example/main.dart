@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:postgres/postgres.dart';
+import 'package:sqlc_dart/sqlc_dart.dart';
+import 'package:sqlc_postgres_dart/sqlc_dart_postgres.dart';
 
 import 'generated/domain_types.dart';
 import 'generated/query.dart';
@@ -16,7 +18,10 @@ void main() async {
     settings: ConnectionSettings(sslMode: SslMode.disable),
   );
   print('has connection!');
-
+  final be = PostgresBackend();
+  final a = GetReplyIds(be.session(conn))(
+    parentId: '1',
+  );
   await createPost(
     conn,
     id: Random().nextDouble().toString(),

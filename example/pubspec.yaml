@@ -8,8 +8,8 @@ environment:
 
 dependencies:
   postgres: ^3.4.4
-  sqlc_dart:
-    path: ../packages/sqlc
+  sqlc_dart: any
+  sqlc_postgres_dart: any
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0

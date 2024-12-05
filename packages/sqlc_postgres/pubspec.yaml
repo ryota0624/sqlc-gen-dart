@@ -10,6 +10,7 @@ dependencies:
   postgres: ^3.4.4
   meta: ^1.16.0
   collection: ^1.15.0
+  sqlc_dart: any
 
 dev_dependencies:
   lints: ^3.0.0

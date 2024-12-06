@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:postgres/postgres.dart';
-import 'package:sqlc_dart/sqlc_dart.dart';
-import 'package:sqlc_postgres_dart/sqlc_dart_postgres.dart';
-import 'package:sqlc_duckdb_dart/sqlc_dart_duckdb.dart';
+import 'package:sqlc_postgres_dart/sqlc_postgres_dart.dart';
+import 'package:sqlc_duckdb_dart/sqlc_duckdb_dart.dart';
 
 import 'package:duckdb_dart/duckdb_dart.dart' as d;
 import 'generated/domain_types.dart';

@@ -1,6 +1,6 @@
 name: sqlc_gen_dart
 description: dart library for sqlc
-version: 1.0.0
+version: 0.0.0
 repository: https://github.com/ryota0624/sqlc-gen-dart
 
 environment:

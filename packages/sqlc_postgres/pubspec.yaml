@@ -1,6 +1,6 @@
 name: sqlc_postgres_dart
 description: dart library for sqlc postgres support
-version: 1.0.0
+version: 0.0.0
 repository: https://github.com/ryota0624/sqlc-gen-dart
 
 environment:
@@ -10,7 +10,7 @@ dependencies:
   postgres: ^3.4.4
   meta: ^1.16.0
   collection: ^1.15.0
-  sqlc_dart: any
+  sqlc_dart: ^0.0.0
 
 dev_dependencies:
   lints: ^3.0.0

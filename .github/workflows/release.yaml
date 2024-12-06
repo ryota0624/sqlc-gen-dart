@@ -2,6 +2,12 @@ name: release
 
 on:
   workflow_dispatch:
+    inputs:
+      modify_readme:
+        type: boolean
+        default: false
+        description: 'modify getting started in README.md'
+        required: false
   push:
     tags:
       - "v*.*.*"
@@ -34,6 +40,7 @@ jobs:
           files: sqlc-gen-dart.wasm
           body: checksum=${{ steps.build.outputs.checksum }}
       - name: modify getting started
+        if: ${{ github.event.inputs.modify_readme == 'true' }}
         env:
           PLUGIN_CHECKSUM: ${{ steps.build.outputs.checksum }}
         run: |

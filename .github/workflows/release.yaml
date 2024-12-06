@@ -51,7 +51,7 @@ jobs:
         run: |
           git checkout -b main
           TAG=${GITHUB_REF#refs/*/}
-          DOWNLOAD_URL="https://github.com/ryota0624/buf-sandbox/releases/download/${TAG}/sqlc-gen-dart.wasm"
+          DOWNLOAD_URL="https://github.com/ryota0624/sqlc-gen-dart/releases/download/${TAG}/sqlc-gen-dart.wasm"
           DOWNLOAD_URL_LINE="      url: ${DOWNLOAD_URL}"
           CHECKSUM_LINE='      sha256: "'${PLUGIN_CHECKSUM}'"'
           awk -v replaceLine="${DOWNLOAD_URL_LINE}" '

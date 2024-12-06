@@ -10,27 +10,28 @@ typedef RowGetReplyIds = String;
 class GetReplyIds {
   final BackendSession _session;
   GetReplyIds(this._session);
-Future<List<RowGetReplyIds>> call({
+  Future<List<RowGetReplyIds>> call({
     required String parentId,
-  QueryExecuteOption? queryExecuteOption,
-}) async {
-  final filledQueryExecuteOption =
-  queryExecuteOption ?? _session.backend.defaultParameter();
-  
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
     final result = await _session.backend.execute(
-      _session,
-"""
+        _session,
+        """
   select id
 from post
 where parent_id = \$1
   """,
-  [
-    parentId,
-  ],filledQueryExecuteOption);
-  return result.cast<RowGetReplyIds>();
+        [
+          parentId,
+        ],
+        filledQueryExecuteOption);
+    return result.cast<RowGetReplyIds>();
+  }
 }
 
-}
 class RowGetPost extends RowBase {
   // psql: text
   final String id;
@@ -41,10 +42,10 @@ class RowGetPost extends RowBase {
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+      };
 
   RowGetPost({
     required this.id,
@@ -66,30 +67,31 @@ class RowGetPost extends RowBase {
 class GetPost {
   final BackendSession _session;
   GetPost(this._session);
-Future<RowGetPost?> call({
+  Future<RowGetPost?> call({
     required String id,
-  QueryExecuteOption? queryExecuteOption,
-}) async {
-  final filledQueryExecuteOption =
-  queryExecuteOption ?? _session.backend.defaultParameter();
-  
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
     final result = await _session.backend.execute(
-      _session,
-"""
+        _session,
+        """
   select id, parent_id, content
 from post
 where id = \$1
   """,
-  [
-    id,
-  ],filledQueryExecuteOption);
-  if (result.isNotEmpty) {
-    return RowGetPost.fromQueryResult(result.first);
+        [
+          id,
+        ],
+        filledQueryExecuteOption);
+    if (result.isNotEmpty) {
+      return RowGetPost.fromQueryResult(result.first);
+    }
+    return null;
   }
-  return null;
 }
 
-}
 class RowListPosts extends RowBase {
   // psql: text
   final String id;
@@ -102,11 +104,11 @@ class RowListPosts extends RowBase {
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-    'star': star,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+        'star': star,
+      };
 
   RowListPosts({
     required this.id,
@@ -130,24 +132,24 @@ class RowListPosts extends RowBase {
 class ListPosts {
   final BackendSession _session;
   ListPosts(this._session);
-Future<List<RowListPosts>> call({
-  QueryExecuteOption? queryExecuteOption,
-}) async {
-  final filledQueryExecuteOption =
-  queryExecuteOption ?? _session.backend.defaultParameter();
-  
+  Future<List<RowListPosts>> call({
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
     final result = await _session.backend.execute(
-      _session,
-"""
+        _session,
+        """
   select id, parent_id, content, star
 from post
   """,
-  [
-  ],filledQueryExecuteOption);
-  return result.map(RowListPosts.fromQueryResult).toList();
+        [],
+        filledQueryExecuteOption);
+    return result.map(RowListPosts.fromQueryResult).toList();
+  }
 }
 
-}
 class RowCreatePost extends RowBase {
   // psql: text
   final String id;
@@ -160,11 +162,11 @@ class RowCreatePost extends RowBase {
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'id': id,
-    'parent_id': parentId,
-    'content': content,
-    'star': star,
-  };
+        'id': id,
+        'parent_id': parentId,
+        'content': content,
+        'star': star,
+      };
 
   RowCreatePost({
     required this.id,
@@ -188,32 +190,33 @@ class RowCreatePost extends RowBase {
 class CreatePost {
   final BackendSession _session;
   CreatePost(this._session);
-Future<void> call({
+  Future<void> call({
     required String id,
     required String parentId,
     required PostContent content,
     required Object star,
-  QueryExecuteOption? queryExecuteOption,
-}) async {
-  final filledQueryExecuteOption =
-  queryExecuteOption ?? _session.backend.defaultParameter();
-  await _session.backend.execute(
-      _session,
-"""
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+    await _session.backend.execute(
+        _session,
+        """
   insert into post (id, parent_id, content, star)
 values (\$1, \$2, \$3, \$4)
 returning id, parent_id, content, star
   """,
-  [
-    id,
-    parentId,
-    content.asSqlType(),
-    star,
-  ],filledQueryExecuteOption);
-  return;
+        [
+          id,
+          parentId,
+          content.asSqlType(),
+          star,
+        ],
+        filledQueryExecuteOption);
+    return;
+  }
 }
 
-}
 class RowListArrayAndJson extends RowBase {
   // psql: text nullable
   final String? name;
@@ -226,11 +229,11 @@ class RowListArrayAndJson extends RowBase {
 
   @visibleForTesting
   Map<String, Object?> toFieldMap() => {
-    'name': name,
-    'int_array': intArray,
-    'text_array_array': textArrayArray,
-    'json_data': jsonData,
-  };
+        'name': name,
+        'int_array': intArray,
+        'text_array_array': textArrayArray,
+        'json_data': jsonData,
+      };
 
   RowListArrayAndJson({
     required this.name,
@@ -254,21 +257,20 @@ class RowListArrayAndJson extends RowBase {
 class ListArrayAndJson {
   final BackendSession _session;
   ListArrayAndJson(this._session);
-Future<List<RowListArrayAndJson>> call({
-  QueryExecuteOption? queryExecuteOption,
-}) async {
-  final filledQueryExecuteOption =
-  queryExecuteOption ?? _session.backend.defaultParameter();
-  
+  Future<List<RowListArrayAndJson>> call({
+    QueryExecuteOption? queryExecuteOption,
+  }) async {
+    final filledQueryExecuteOption =
+        queryExecuteOption ?? _session.backend.defaultParameter();
+
     final result = await _session.backend.execute(
-      _session,
-"""
+        _session,
+        """
   select name, int_array, text_array_array, json_data
 from array_and_json
   """,
-  [
-  ],filledQueryExecuteOption);
-  return result.map(RowListArrayAndJson.fromQueryResult).toList();
-}
-
+        [],
+        filledQueryExecuteOption);
+    return result.map(RowListArrayAndJson.fromQueryResult).toList();
+  }
 }

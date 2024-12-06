@@ -1,4 +1,3 @@
-
 class PostContent {
   final String value;
 
@@ -11,12 +10,13 @@ class PostContent {
   String asSqlType() {
     return value;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PostContent &&
-      runtimeType == other.runtimeType &&
-      value == other.value;
+          runtimeType == other.runtimeType &&
+          value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -26,6 +26,7 @@ class PostContent {
     return 'PostContent($value)';
   }
 }
+
 class PostRate {
   final int value;
 
@@ -38,12 +39,13 @@ class PostRate {
   int asSqlType() {
     return value;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PostRate &&
-      runtimeType == other.runtimeType &&
-      value == other.value;
+          runtimeType == other.runtimeType &&
+          value == other.value;
 
   @override
   int get hashCode => value.hashCode;

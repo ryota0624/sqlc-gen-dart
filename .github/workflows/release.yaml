@@ -8,6 +8,10 @@ on:
         default: false
         description: 'modify getting started in README.md'
         required: false
+      release_name:
+        type: string
+        description: 'name of the release'
+        required: true
   push:
     tags:
       - "v*.*.*"
@@ -39,6 +43,7 @@ jobs:
         with:
           files: sqlc-gen-dart.wasm
           body: checksum=${{ steps.build.outputs.checksum }}
+          tag_name: ${{ (github.event.inputs.release_name != '' && github.event.inputs.release_name) || github.ref_name }}
       - name: modify getting started
         if: ${{ github.event.inputs.modify_readme == 'true' }}
         env:
